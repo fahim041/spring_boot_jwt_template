@@ -2,7 +2,7 @@ spring:
   application:
     name: jwt_auth
   datasource:
-    url: jdbc::postgresql://localhost:5432/jwt_prac
+    url: jdbc:postgresql://localhost:5432/jwt_prac
     username: root
     password: root
     driver-class-name: org.postgresql.Driver
