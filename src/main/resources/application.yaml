@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: jwt_auth
+  datasource:
+    url: jdbc::postgresql://localhost:5432/jwt_prac
+    username: root
+    password: root
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
