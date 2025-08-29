@@ -8,6 +8,7 @@ import com.example.jwt_auth.repositories.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.Map;
 public class UserController {
     private final UserRepository  userRepository;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @GetMapping
     public List<UserDto> getAllUsers(){
@@ -39,6 +41,7 @@ public class UserController {
 
         var user = userMapper.toEntity(registerUserDto);
         user.setRole(Role.USER);
+        user.setPassword(passwordEncoder.encode(registerUserDto.getPassword()));
         userRepository.save(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(userMapper.toDto(user));
     }
