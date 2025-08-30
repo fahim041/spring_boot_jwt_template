@@ -16,7 +16,7 @@ public class Jwt {
         this.secretKey = secretKey;
     }
 
-    public boolean isExpired() {
+    public boolean isValid() {
         return claims.getExpiration().after(new Date());
     }
 
