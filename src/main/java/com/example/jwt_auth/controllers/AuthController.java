@@ -91,6 +91,15 @@ public class AuthController {
         return  ResponseEntity.ok(new JwtResponseDto(accessToken.toString()));
     }
 
+    @PostMapping("/invalidate-token")
+    public ResponseEntity<Void> invalidateRefreshToken(
+            @RequestParam(name = "token") String refreshToken
+    ){
+        System.out.println("invalidateRefreshToken "+ refreshToken);
+        refreshTokenService.invalidate(refreshToken);
+        return ResponseEntity.ok().build();
+    }
+
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<Void> handleBadCredentialsException(){
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

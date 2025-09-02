@@ -43,10 +43,10 @@ public class RefreshTokenService {
     }
 
     public void invalidate(String key) {
-        RedisRefreshToken redisRefreshToken = (RedisRefreshToken) valueOperations.get(buildKey(key));
+        var redisRefreshToken = (RedisRefreshToken) valueOperations.get(buildKey(key));
         if (redisRefreshToken != null) {
             redisRefreshToken.setValid(false);
-            valueOperations.set(key, redisRefreshToken);
+            valueOperations.set(buildKey(key), redisRefreshToken);
         }
     }
 }
