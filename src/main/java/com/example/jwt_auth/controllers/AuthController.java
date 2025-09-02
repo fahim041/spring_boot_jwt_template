@@ -4,9 +4,11 @@ import com.example.jwt_auth.config.JwtConfig;
 import com.example.jwt_auth.dtos.JwtResponseDto;
 import com.example.jwt_auth.dtos.LoginRequestDto;
 import com.example.jwt_auth.dtos.UserDto;
+import com.example.jwt_auth.entites.RedisRefreshToken;
 import com.example.jwt_auth.mappers.UserMapper;
 import com.example.jwt_auth.repositories.UserRepository;
 import com.example.jwt_auth.services.JwtService;
+import com.example.jwt_auth.services.RefreshTokenService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -28,6 +30,7 @@ public class AuthController {
     private final JwtService jwtService;
     private final JwtConfig jwtConfig;
     private final UserMapper  userMapper;
+    private final RefreshTokenService refreshTokenService;
 
     @PostMapping("/login")
     public ResponseEntity<JwtResponseDto> login(
@@ -41,6 +44,9 @@ public class AuthController {
         var user = userRepository.findByEmail(loginRequestDto.getEmail()).orElseThrow();
         var accessToken = jwtService.generateAccessToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
+
+        var refreshTokenData = new RedisRefreshToken(refreshToken.toString(), true);
+        refreshTokenService.save(refreshToken.toString(), refreshTokenData);
 
         var cookie = new Cookie("refreshToken", refreshToken.toString());
         cookie.setHttpOnly(true);
@@ -70,6 +76,12 @@ public class AuthController {
     ){
         var jwt = jwtService.parseToken(refreshToken);
         if(jwt == null || !jwt.isValid()){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        // check if the token is valid in redis
+        var refreshTokenData = refreshTokenService.findByToken(refreshToken);
+        if(refreshTokenData == null || !refreshTokenData.get().isValid()){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
